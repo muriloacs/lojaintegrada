@@ -151,6 +151,11 @@ class Matrix(object):
         :param name: name of the file
         :return:
         """
+        # Save to a file
+        with open("images/{0}".format(name), "w") as image_file:
+            image_file.write(str(self.to_table(self.elements)))
+
+        # Save to outputs
         self.outputs.append({"name": name, "matrix": self.elements})
         self.clean()
 
