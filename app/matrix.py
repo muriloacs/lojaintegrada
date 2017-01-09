@@ -23,9 +23,7 @@ class Matrix(object):
         :param m: number of columns
         :param n: number of rows
         """
-        columns = int(m)
-        rows = int(n)
-        self.elements = [self.WHITE_PIXEL * columns for row in range(rows)]
+        self.elements = [self.WHITE_PIXEL * int(m) for row in range(int(n))]
 
     def clean(self):
         """
@@ -58,12 +56,8 @@ class Matrix(object):
         :param y2: finishing row
         :param color: character
         """
-        x = int(x)
-        y1 = int(y1)
-        y2 = int(y2)
-
-        for y in range(y1, y2+1):
-            self.draw_element(x, y, color)
+        for y in range(int(y1), int(y2)+1):
+            self.draw_element(int(x), y, color)
 
     def draw_row(self, x1, x2, y, color):
         """
@@ -73,12 +67,8 @@ class Matrix(object):
         :param y: row
         :param color: character
         """
-        y = int(y)
-        x1 = int(x1)
-        x2 = int(x2)
-
-        for x in range(x1, x2+1):
-            self.draw_element(x, y, color)
+        for x in range(int(x1), int(x2)+1):
+            self.draw_element(x, int(y), color)
 
     def draw_rectangle(self, x1, y1, x2, y2, color):
         """
@@ -89,13 +79,8 @@ class Matrix(object):
         :param y2:
         :param color: character
         """
-        y1 = int(y1)
-        y2 = int(y2)
-        x1 = int(x1)
-        x2 = int(x2)
-
-        for y in range(y1, y2+1):
-            self.draw_row(x1, x2, y, color)
+        for y in range(int(y1), int(y2)+1):
+            self.draw_row(int(x1), int(x2), y, color)
 
     def draw_area(self, x, y, color):
         """
@@ -104,9 +89,7 @@ class Matrix(object):
         :param y:
         :param color:
         """
-        x = int(x) - 1
-        y = int(y) - 1
-        self.fill(x, y, color.upper())
+        self.fill(int(x) - 1, int(y) - 1, color.upper())
 
     def fill(self, x, y, color, color_at_position=None):
         """
@@ -116,8 +99,8 @@ class Matrix(object):
         :param color:
         :param color_at_position:
         """
-        columns = len(self.elements[0]) - 1
         rows = len(self.elements) - 1
+        columns = len(self.elements[0]) - 1
 
         if color_at_position == None:
             # Gets color at position x, y.
