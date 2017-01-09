@@ -88,5 +88,16 @@ class TestMatrix(unittest.TestCase):
         self.assertEqual(self.matrix.elements[2][2], "A")
         self.assertEqual(self.matrix.elements[2][3], "A")
 
+    def test_save_image(self):
+        self.matrix.create(2, 2)
+        self.matrix.draw_element(1, 1, "A")
+        self.matrix.save_image('test_image')
+        with open("images/test_image", "r") as image_file:
+            image_content = image_file.read()
+            self.assertIn("Field 1", image_content)
+            self.assertIn("Field 2", image_content)
+            self.assertIn("|    0    |", image_content)
+            self.assertNotIn("|    1    |", image_content)
+
 if __name__ == '__main__':
     unittest.main()
