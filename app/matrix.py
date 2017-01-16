@@ -14,19 +14,6 @@ class Matrix(object):
     # Representation of a white pixel.
     WHITE_PIXEL = [0]
 
-    # All available commands.
-    commands = {
-        'I': 'create',
-        'C': 'clean',
-        'L': 'draw_element',
-        'V': 'draw_column',
-        'H': 'draw_row',
-        'K': 'draw_rectangle',
-        'F': 'draw_area',
-        'S': 'save_image',
-        'X': 'exit'
-    }
-
     def create(self, parameters):
         """
         Creates a new matrix containing only white pixels.
@@ -34,9 +21,10 @@ class Matrix(object):
         """
         self.elements = [self.WHITE_PIXEL * int(parameters[0]) for row in range(int(parameters[1]))]
 
-    def clean(self):
+    def clean(self, parameters=None):
         """
         Cleans matrix by switching all elements to white pixels.
+        :param parameters:
         """
         m, n = self.length()
         self.create([m, n])
@@ -145,6 +133,16 @@ class Matrix(object):
         for output in self.outputs:
             print("\n", output['name'], self.to_table(output['matrix']))
 
+    def exit(self, parameters=None):
+        """
+        Exits program.
+        :param parameters:
+        :return:
+        """
+        self.show()
+        print("Program exited.")
+        exit()
+
     @staticmethod
     def to_table(matrix):
         """
@@ -175,20 +173,27 @@ def main():
     """
     matrix = Matrix()
 
+    commands = {
+        'I': matrix.create,
+        'C': matrix.clean,
+        'L': matrix.draw_element,
+        'V': matrix.draw_column,
+        'H': matrix.draw_row,
+        'K': matrix.draw_rectangle,
+        'F': matrix.draw_area,
+        'S': matrix.save_image,
+        'X': matrix.exit,
+    }
+
     while True:
         program_input = input("Input: ")
         parameters = program_input.split(' ')
-        command = parameters[0].upper()
+        command = parameters.pop(0).upper()
 
-        if command not in matrix.commands.keys():
+        if command not in commands.keys():
             continue
 
-        elif command == 'X':
-            matrix.show()
-            print("Program exited.")
-            break
-
-        getattr(matrix, matrix.commands[command])(parameters)
+        commands[command](parameters)
 
 if __name__ == '__main__':
     main()
