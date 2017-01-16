@@ -8,88 +8,83 @@ class Matrix(object):
     # The representation of the matrix itself.
     elements = []
 
-    # A tuple (immutable list) representing all the available parameters.
-    available_commands = ('I', 'C', 'L', 'V', 'H', 'K', 'F', 'S', 'X')
-
     # Matrix saved outputs.
     outputs = []
 
     # Representation of a white pixel.
     WHITE_PIXEL = [0]
 
-    def create(self, m, n):
+    # All available commands.
+    commands = {
+        'I': 'create',
+        'C': 'clean',
+        'L': 'draw_element',
+        'V': 'draw_column',
+        'H': 'draw_row',
+        'K': 'draw_rectangle',
+        'F': 'draw_area',
+        'S': 'save_image',
+        'X': 'exit'
+    }
+
+    def create(self, parameters):
         """
         Creates a new matrix containing only white pixels.
-        :param m: number of columns
-        :param n: number of rows
+        :param parameters: x, y
         """
-        self.elements = [self.WHITE_PIXEL * int(m) for row in range(int(n))]
+        self.elements = [self.WHITE_PIXEL * int(parameters[0]) for row in range(int(parameters[1]))]
 
     def clean(self):
         """
         Cleans matrix by switching all elements to white pixels.
         """
         m, n = self.length()
-        self.create(m, n)
+        self.create([m, n])
 
-    def draw_element(self, x, y, color):
+    def draw_element(self, parameters):
         """
         Colors element at position x, y.
-        :param x: column
-        :param y: row
-        :param color: character
+        :param parameters: x, y, color
         """
-        x = abs(int(x))
-        y = abs(int(y))
-        color = str(color).upper()
+        x = abs(int(parameters[0]))
+        y = abs(int(parameters[1]))
+        color = str(parameters[2]).upper()
 
         if 0 in (x, y):
             raise ValueError
 
         self.elements[y-1][x-1] = color
 
-    def draw_column(self, x, y1, y2, color):
+    def draw_column(self, parameters):
         """
         Colors column x from rows y1 to y2.
-        :param x: column
-        :param y1: starting row
-        :param y2: finishing row
-        :param color: character
+        :param parameters: x, y1, y2, color
         """
-        for y in range(int(y1), int(y2)+1):
-            self.draw_element(int(x), y, color)
+        for y in range(int(parameters[1]), int(parameters[2])+1):
+            self.draw_element([int(parameters[0]), y, parameters[3]])
 
-    def draw_row(self, x1, x2, y, color):
+    def draw_row(self, parameters):
         """
         Colors row y from columns x1 to x2.
-        :param x1: starting column
-        :param x2: finishing column
-        :param y: row
-        :param color: character
+        :param parameters: x1, x2, y, color
         """
-        for x in range(int(x1), int(x2)+1):
-            self.draw_element(x, int(y), color)
+        for x in range(int(parameters[0]), int(parameters[1])+1):
+            self.draw_element([x, int(parameters[2]), parameters[3]])
 
-    def draw_rectangle(self, x1, y1, x2, y2, color):
+    def draw_rectangle(self, parameters):
         """
         Colors a rectangle.
-        :param x1:
-        :param y1:
-        :param x2:
-        :param y2:
-        :param color: character
+        :param parameters: x1, y1, x2, y2, color
         """
-        for y in range(int(y1), int(y2)+1):
-            self.draw_row(int(x1), int(x2), y, color)
+        for y in range(int(parameters[1]), int(parameters[3])+1):
+            self.draw_row([int(parameters[0]), int(parameters[2]), y, parameters[4]])
 
-    def draw_area(self, x, y, color):
+    def draw_area(self, parameters):
         """
         Colors an area.
-        :param x:
-        :param y:
-        :param color:
+        :param parameters: x, y, color
         """
-        self.fill(int(x) - 1, int(y) - 1, color.upper())
+        self.fill(int(parameters[0]) - 1, int(parameters[1]) - 1, parameters[2].upper())
 
     def fill(self, x, y, color, color_at_position=None):
         """
@@ -128,18 +123,18 @@ class Matrix(object):
 
         return
 
-    def save_image(self, name):
+    def save_image(self, parameters):
         """
         Saves an image into a file.
-        :param name: name of the file
+        :param parameters: name
         :return:
         """
         # Save to a file
-        with open("images/{0}".format(name), "w") as image_file:
+        with open("images/{0}".format(parameters[0]), "w") as image_file:
             image_file.write(str(self.to_table(self.elements)))
 
         # Save to outputs
-        self.outputs.append({"name": name, "matrix": self.elements})
+        self.outputs.append({"name": parameters[0], "matrix": self.elements})
         self.clean()
 
     def show(self):
@@ -185,37 +180,15 @@ def main():
         parameters = program_input.split(' ')
         command = parameters[0].upper()
 
-        if command not in matrix.available_commands:
+        if command not in matrix.commands.keys():
             continue
-
-        elif command == 'I':
-            matrix.create(parameters[1], parameters[2])
-
-        elif command == 'C':
-            matrix.clean()
-
-        elif command == 'L':
-            matrix.draw_element(parameters[1], parameters[2], parameters[3])
-
-        elif command == 'V':
-            matrix.draw_column(parameters[1], parameters[2], parameters[3], parameters[4])
-
-        elif command == 'H':
-            matrix.draw_row(parameters[1], parameters[2], parameters[3], parameters[4])
-
-        elif command == 'K':
-            matrix.draw_rectangle(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5])
-
-        elif command == 'F':
-            matrix.draw_area(parameters[1], parameters[2], parameters[3])
-
-        elif command == 'S':
-            matrix.save_image(parameters[1])
 
         elif command == 'X':
             matrix.show()
             print("Program exited.")
             break
+
+        getattr(matrix, matrix.commands[command])(parameters)
 
 if __name__ == '__main__':
     main()
